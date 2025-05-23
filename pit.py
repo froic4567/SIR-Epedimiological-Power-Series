@@ -9,11 +9,11 @@ from scipy.optimize import curve_fit
 months = np.arange(0, 22)  # 0 = March 2020, 1 = April 2020, ..., 21 = Dec 2021
 
 # Replace with Cagayan de Oro's population for 2021
-N = 700000  # Example: Use the 2021 population value
+N = 728402  # Example: Use the 2021 population value
 
 # Replace these arrays with your actual data!
-I_actual = np.array([100, 200, 500, 1200, ..., 150])  # Infected (22 values)
-R_actual = np.array([0, 50, 200, 600, ..., 1000])      # Recovered (22 values)
+I_actual = np.array([19, 19, 20, 86, 71, 159, 280, 195, 309, 268,454,275,392,666,2174,2388,2741,2140,592,349,138,99])  # Infected (22 values)
+R_actual = np.array([5, 17, 13, 13, 83, 142, 206, 602, 414, 325,438,559,210,433,1089,2656,1986,4830,3013,832,318,74])      # Recovered (22 values)
 
 # Compute Susceptible (S = N - I - R)
 S_actual = N - I_actual - R_actual
@@ -62,9 +62,15 @@ def fit_function(params, t):
     return np.concatenate([I_pred, R_pred])
 
 observed_data = np.concatenate([I_actual, R_actual])
-initial_guess = [0.3, 0.1]
-params, _ = curve_fit(lambda t, beta, gamma: fit_function((beta, gamma), t), 
-                      months, observed_data, p0=initial_guess, bounds=(0, [5, 5]))
+initial_guess = [2.0, 1.0]  # Adjusted initial guess (more realistic for monthly data)
+params, _ = curve_fit(
+    lambda t, beta, gamma: fit_function((beta, gamma), t),
+    months,
+    observed_data,
+    p0=initial_guess,
+    bounds=(0, [5, 5]),
+    maxfev=10000  # Increase max function evaluations
+)
 beta_fit, gamma_fit = params
 print(f"Fitted: beta = {beta_fit:.3f}/month, gamma = {gamma_fit:.3f}/month")
 
